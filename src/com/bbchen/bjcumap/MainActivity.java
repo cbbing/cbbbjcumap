@@ -12,6 +12,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,6 +33,19 @@ public class MainActivity extends Activity {
 		WebSettings settings = webView.getSettings();
 		settings.setPluginState(PluginState.ON);
 		settings.setJavaScriptEnabled(true); 
+		
+		if(android.os.Build.VERSION.SDK_INT>=8){
+			settings.setPluginState(PluginState.ON);
+		}
+		settings.setAllowFileAccess(true);
+		settings.setDefaultTextEncodingName("UTF-8");
+		settings.setAllowFileAccessFromFileURLs(true);
+		if(android.os.Build.VERSION.SDK_INT >= 14) {
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		}
+		settings.setSupportZoom(true);
+		settings.setAppCacheEnabled(true);
+    
 		//if (check()) {
 			 //加载需要显示的网页 
 			webView.loadUrl("http://218.246.23.85/bjcumap/index.jsp");
