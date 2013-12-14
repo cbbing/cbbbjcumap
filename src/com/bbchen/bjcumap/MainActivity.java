@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
 		WebSettings settings = webView.getSettings();
 		settings.setPluginState(PluginState.ON);
 		settings.setJavaScriptEnabled(true); 
+		settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		
 		if(android.os.Build.VERSION.SDK_INT>=8){
 			settings.setPluginState(PluginState.ON);
