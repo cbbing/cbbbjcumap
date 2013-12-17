@@ -2,9 +2,12 @@ package com.bbchen.bjcumap;
 
 import java.io.File;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -69,7 +72,7 @@ public class MainActivity extends Activity {
             return true; 
         }
 
-		@Override
+		/*@Override
 		public void onLoadResource(WebView view, String url) {
 			// TODO Auto-generated method stub
 			Log.i(TAG, "onLoadResource url="+url);
@@ -96,7 +99,7 @@ public class MainActivity extends Activity {
 				String description, String failingUrl) {
 			// TODO Auto-generated method stub
 			super.onReceivedError(view, errorCode, description, failingUrl);
-		} 
+		} */
     } 
 	
 	private void initWebView() {
@@ -106,7 +109,14 @@ public class MainActivity extends Activity {
 		settings.setJavaScriptEnabled(true);
 		settings.setRenderPriority(RenderPriority.HIGH);//提高渲染的优先级,提高加载速度
 		//settings.setBlockNetworkImage(true);//把图片加载放在最后来加载渲染
-		settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);//设置 缓存模式
+		//设置 缓存模式
+		if (isNetworkConnected(this)) {
+			settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+		}
+		else {
+			settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		}
+		
 		
 		// 开启 DOM storage API 功能  
 		settings.setDomStorageEnabled(true);
@@ -132,58 +142,16 @@ public class MainActivity extends Activity {
 		}
 		settings.setSupportZoom(true);
 	}
-	
-	 /** 
-     * 清除WebView缓存 
-     */  
-    public void clearWebViewCache(){  
-          
-        //清理Webview缓存数据库  
-        try {  
-            deleteDatabase("webview.db");   
-            deleteDatabase("webviewCache.db");  
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        }  
-          
-        //WebView 缓存文件  
-        File appCacheDir = new File(getFilesDir().getAbsolutePath()+APP_CACHE_DIRNAME);  
-        Log.e(TAG, "appCacheDir path="+appCacheDir.getAbsolutePath());  
-          
-        File webviewCacheDir = new File(getCacheDir().getAbsolutePath()+"/webviewCache");  
-        Log.e(TAG, "webviewCacheDir path="+webviewCacheDir.getAbsolutePath());  
-          
-        //删除webview 缓存目录  
-        if(webviewCacheDir.exists()){  
-            deleteFile(webviewCacheDir);  
-        }  
-        //删除webview 缓存 缓存目录  
-        if(appCacheDir.exists()){  
-            deleteFile(appCacheDir);  
-        }  
-    }  
     
-    /** 
-     * 递归删除 文件/文件夹 
-     *  
-     * @param file 
-     */  
-    public void deleteFile(File file) {  
-  
-        Log.i(TAG, "delete file path=" + file.getAbsolutePath());  
-          
-        if (file.exists()) {  
-            if (file.isFile()) {  
-                file.delete();  
-            } else if (file.isDirectory()) {  
-                File files[] = file.listFiles();  
-                for (int i = 0; i < files.length; i++) {  
-                    deleteFile(files[i]);  
-                }  
+    public boolean isNetworkConnected(Context context) {  
+        if (context != null) {  
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context  
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);  
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();  
+            if (mNetworkInfo != null) {  
+                return mNetworkInfo.isAvailable();  
             }  
-            file.delete();  
-        } else {  
-            Log.e(TAG, "delete file no exists " + file.getAbsolutePath());  
         }  
-    }  
+        return false;  
+    }
 }

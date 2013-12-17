@@ -5,14 +5,22 @@ import java.io.File;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class SettingActivity extends PreferenceActivity {
+public class SettingActivity extends PreferenceActivity 
+			implements OnPreferenceChangeListener, OnPreferenceClickListener{
 
 	private static final String TAG = MainActivity.class.getSimpleName();  
     private static final String APP_CACHE_DIRNAME = "/webcache"; 
+    private CheckBoxPreference mCheckRotate, mCheckZoom;
+    private Preference mPreferenceClearCache;
+    private SharedPreferences mSharedPrefs;
     
 	@SuppressWarnings("deprecation")
 	@Override
@@ -22,27 +30,21 @@ public class SettingActivity extends PreferenceActivity {
 		setContentView(R.layout.layout_setting);
 		addPreferencesFromResource(R.xml.setting);
 		
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		sp.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
-			
-			@Override
-			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-					String key) {
-				// TODO Auto-generated method stub
-				if (key.equals("set_rotate")) {
-					Log.d("TAG", "rotate");
-				}else if (key.equals("set_zoom")) {
-					Log.d("TAG", "zoom");
-				}else if (key.equals("set_clearcache")) {
-					Log.d("TAG", "clearcache");
-					clearWebViewCache();
-				}
-				
-			}
-		});
-		
+		initViews();
 	}
 
+	private void initViews(){
+		//得到以包命名的SharedPreferences
+		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		mCheckRotate = (CheckBoxPreference)findPreference("set_rotate");
+		mCheckZoom = (CheckBoxPreference)findPreference("set_zoom");
+		mPreferenceClearCache = (Preference)findPreference("set_clearcache");
+		 
+		mCheckRotate.setOnPreferenceChangeListener(this);
+		mCheckZoom.setOnPreferenceChangeListener(this);
+		mPreferenceClearCache.setOnPreferenceClickListener(this);
+		
+	}
 
 	 /** 
     * 清除WebView缓存 
@@ -96,5 +98,28 @@ public class SettingActivity extends PreferenceActivity {
        } else {  
            Log.e(TAG, "delete file no exists " + file.getAbsolutePath());  
        }  
-   }  
+   }
+
+
+@Override
+public boolean onPreferenceClick(Preference preference) {
+	// TODO Auto-generated method stub
+	if (preference.getKey().equals("set_clearcache")) {
+		Log.d("TAG", "clearcache");
+		clearWebViewCache();
+	}
+	return false;
+}
+
+
+@Override
+public boolean onPreferenceChange(Preference preference, Object newValue) {
+	// TODO Auto-generated method stub
+	if (preference.getKey().equals("set_rotate")) {
+		Log.d("TAG", "rotate");
+	}else if (preference.getKey().equals("set_zoom")) {
+		Log.d("TAG", "zoom");
+	}
+	return false;
+}  
 }
