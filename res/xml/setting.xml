@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:layout="@layout/pref_category"
+        android:title="设置" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="set_rotate"
+            android:layout="@layout/pref_list_item_top"
+            android:summaryOff="当前状态：关闭"
+            android:summaryOn="当前状态：开启"
+            android:title="自动翻转"
+            android:widgetLayout="@layout/pref_widget_checkbox" />
+
+         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="set_zoom"
+            android:layout="@layout/pref_list_item_mid"
+            android:summaryOff="当前状态：关闭"
+            android:summaryOn="当前状态：开启"
+            android:title="网页缩放"
+            android:widgetLayout="@layout/pref_widget_checkbox" />       
+       
+          <Preference
+            android:key="set_clearcache"
+            android:layout="@layout/pref_list_item_bot"
+            android:summary="点击清除"
+            android:title="清除缓存"
+            android:widgetLayout="@layout/pref_widget_more" />
+          
+    </PreferenceCategory>
+     
+	
+</PreferenceScreen>
