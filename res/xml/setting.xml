@@ -4,13 +4,22 @@
     <PreferenceCategory
         android:layout="@layout/pref_category"
         android:title="设置" >
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="set_rotate"
+        
+        <EditTextPreference
+            android:dialogTitle="输入网址"
+            android:key="set_url"
             android:layout="@layout/pref_list_item_top"
+            android:summary="点击修改"
+            android:title="修改网站主页" 
+            android:widgetLayout="@layout/pref_widget_more"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="set_rotate"
+            android:layout="@layout/pref_list_item_mid"
             android:summaryOff="当前状态：关闭"
             android:summaryOn="当前状态：开启"
-            android:title="自动翻转"
+            android:title="锁定屏幕旋转"
             android:widgetLayout="@layout/pref_widget_checkbox" />
 
          <CheckBoxPreference
@@ -20,15 +29,25 @@
             android:summaryOff="当前状态：关闭"
             android:summaryOn="当前状态：开启"
             android:title="网页缩放"
-            android:widgetLayout="@layout/pref_widget_checkbox" />       
+            android:widgetLayout="@layout/pref_widget_checkbox" />
+         
+          <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="set_cacheMode"
+            android:layout="@layout/pref_list_item_mid"
+            android:summaryOff="当前状态：网页优先"
+            android:summaryOn="当前状态：缓存优先"
+            android:title="数据来源"
+            android:widgetLayout="@layout/pref_widget_checkbox" />
        
+          <!--  
           <Preference
             android:key="set_clearcache"
             android:layout="@layout/pref_list_item_bot"
             android:summary="点击清除"
             android:title="清除缓存"
             android:widgetLayout="@layout/pref_widget_more" />
-          
+          -->
     </PreferenceCategory>
      
 	
