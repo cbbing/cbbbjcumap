@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
     private static final String APP_CACHE_DIRNAME = "/webcache"; 
 	WebView webView;
 	private long firstime = 0;
-	String defaultURL = "http://218.246.23.89/bjcumap/index_mobile.jsp";
+	public static String defaultURL = "http://218.246.23.89/bjcumap/index_mobile.jsp";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +103,21 @@ public class MainActivity extends Activity {
      		webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
      	}
      	
+     	//设置Javascript
+     	Boolean bOpenJS= prefs.getBoolean("set_javascript",true);
+     	webView.getSettings().setJavaScriptEnabled(bOpenJS);
+     	
+     	//设置硬件加速
+     	Boolean bAccHandWare= prefs.getBoolean("set_handware",false);
+//     	if (bAccHandWare) {
+//     		webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+//		}else {
+//			webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+//		}
+     	
+     	
 	}
+	@SuppressLint("NewApi")
 	private void initWebView() {
 		//设置WebView属性，能够执行Javascript脚本 
 		WebSettings settings = webView.getSettings();
@@ -133,9 +147,6 @@ public class MainActivity extends Activity {
 		//开启Application Caches功能
 		settings.setAppCacheEnabled(true);
 			
-		if (android.os.Build.VERSION.SDK_INT >= 8) {
-			settings.setPluginState(PluginState.ON);
-		}
 		settings.setAllowFileAccess(true);
 		settings.setDefaultTextEncodingName("UTF-8");
 		settings.setAllowFileAccessFromFileURLs(true);
@@ -258,7 +269,7 @@ public class MainActivity extends Activity {
 	 */
 	public void changeOrientation(Boolean bAutoRotate) {
 		
-		if (!bAutoRotate) {
+		if (bAutoRotate) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 		}
 		else {

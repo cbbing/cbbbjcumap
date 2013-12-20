@@ -10,20 +10,20 @@
             android:key="set_url"
             android:layout="@layout/pref_list_item_top"
             android:summary="点击修改"
-            android:title="修改网站主页" 
+            android:title="网站主页" 
             android:widgetLayout="@layout/pref_widget_more"/>
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="set_rotate"
             android:layout="@layout/pref_list_item_mid"
             android:summaryOff="当前状态：关闭"
             android:summaryOn="当前状态：开启"
-            android:title="锁定屏幕旋转"
+            android:title="屏幕旋转"
             android:widgetLayout="@layout/pref_widget_checkbox" />
 
          <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="set_zoom"
             android:layout="@layout/pref_list_item_mid"
             android:summaryOff="当前状态：关闭"
@@ -39,6 +39,24 @@
             android:summaryOn="当前状态：缓存优先"
             android:title="数据来源"
             android:widgetLayout="@layout/pref_widget_checkbox" />
+          
+           <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="set_javascript"
+            android:layout="@layout/pref_list_item_mid"
+            android:summaryOff="当前状态：关闭"
+            android:summaryOn="当前状态：开启"
+            android:title="开启JavaScript"
+            android:widgetLayout="@layout/pref_widget_checkbox" />
+           
+            <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="set_handware"
+            android:layout="@layout/pref_list_item_bot"
+            android:summaryOff="当前状态：关闭"
+            android:summaryOn="当前状态：开启"
+            android:title="开启硬件加速"
+            android:widgetLayout="@layout/pref_widget_checkbox" />
        
           <!--  
           <Preference
@@ -49,6 +67,17 @@
             android:widgetLayout="@layout/pref_widget_more" />
           -->
     </PreferenceCategory>
-     
+      
+    <PreferenceCategory
+         android:layout="@layout/pref_category"
+         android:title="  " >
+           <Preference
+            android:key="set_default"
+            android:layout="@layout/pref_list_item_top"
+			android:title="恢复默认设置"           
+            android:summary="重置全部设置"      
+            android:widgetLayout="@layout/pref_widget_more" />
+        
+     </PreferenceCategory>
 	
 </PreferenceScreen>

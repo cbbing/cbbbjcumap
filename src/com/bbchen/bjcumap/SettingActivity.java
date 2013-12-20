@@ -3,8 +3,11 @@ package com.bbchen.bjcumap;
 import java.io.File;
 import java.lang.reflect.Method;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.IPackageStatsObserver;
 import android.content.pm.PackageManager;
@@ -28,7 +31,8 @@ public class SettingActivity extends PreferenceActivity
 	private static final String TAG = MainActivity.class.getSimpleName();  
     private static final String APP_CACHE_DIRNAME = "/webcache"; 
     //private CheckBoxPreference mCheckRotate, mCheckZoom;
-    private Preference mPreferenceClearCache;
+    //private Preference mPreferenceClearCache;
+    private Preference mPreferenceReset;
     private SharedPreferences mSharedPrefs;
     
     private static final String ATTR_PACKAGE_STATS="PackageStats";
@@ -45,16 +49,19 @@ public class SettingActivity extends PreferenceActivity
 		getpkginfo("com.bbchen.bjcumap");
 	}
 
+	@SuppressWarnings("deprecation")
 	private void initViews(){
 		//得到以包命名的SharedPreferences
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		//mCheckRotate = (CheckBoxPreference)findPreference("set_rotate");
 		//mCheckZoom = (CheckBoxPreference)findPreference("set_zoom");
 		//mPreferenceClearCache = (Preference)findPreference("set_clearcache");
+		mPreferenceReset = (Preference)findPreference("set_default");
 		 
 		//mCheckRotate.setOnPreferenceChangeListener(this);
 		//mCheckZoom.setOnPreferenceChangeListener(this);
 		//mPreferenceClearCache.setOnPreferenceClickListener(this);
+		mPreferenceReset.setOnPreferenceClickListener(this);
 		
 	}
 
@@ -120,9 +127,41 @@ public class SettingActivity extends PreferenceActivity
 			Log.d("TAG", "clearcache");
 			clearWebViewCache();
 		}
-		else if (preference.getKey().equals("set_url")) {
-			Log.d("TAG", "clearcache");
-			clearWebViewCache();
+		else if (preference.getKey().equals("set_default")) {
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		    builder.setTitle("恢复默认设置?");
+		    //builder.setIcon(android.R.drawable.ic_dialog_info);
+			builder.setPositiveButton("确定",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Log.d("TAG", "reset all setting");
+							Editor editor = mSharedPrefs.edit();
+							editor.putString("set_url", "");
+							editor.putBoolean("set_rotate", true);
+							editor.putBoolean("set_zoom", false);
+							editor.putBoolean("set_cacheMode", true);
+							editor.putBoolean("set_javascript", true);
+							editor.putBoolean("set_handware", false);
+							editor.commit();
+							finish();
+							Intent intent = new Intent(SettingActivity.this, SettingActivity.class);
+							startActivity(intent);
+
+						}
+					});
+			builder.setNegativeButton("取消",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					});
+			builder.show();
+
 		}
 		return false;
 	}
@@ -134,7 +173,10 @@ public class SettingActivity extends PreferenceActivity
 			Log.d("TAG", "rotate");
 		} else if (preference.getKey().equals("set_zoom")) {
 			Log.d("TAG", "zoom");
+		} else if (preference.getKey().equals("set_javascript")) {
+			Log.d("TAG", "javascript");
 		}
+		
 		return false;
 	} 
 
