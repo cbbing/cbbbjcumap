@@ -4,7 +4,20 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Logger;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,6 +36,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
@@ -30,25 +45,76 @@ import android.webkit.WebViewClient;
 import android.webkit.WebSettings.PluginState;
 import android.widget.Toast;
 
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint({ "SetJavaScriptEnabled", "NewApi" })
 public class MainActivity extends Activity {
 
 	private static final String TAG = MainActivity.class.getSimpleName();  
     private static final String APP_CACHE_DIRNAME = "/webcache"; 
 	WebView webView;
 	private long firstime = 0;
-	public static String defaultURL = "http://218.246.23.89/bjcumap/index_mobile.jsp";
+	public static String defaultURL = "http://218.246.23.89/bjcumap/index_mobile.jsp";//"http://wap.baidu.com";//
 	
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+				.detectDiskReads()
+				.detectDiskWrites()
+				.detectNetwork() // or .detectAll() for all detectable problems
+				.penaltyLog()
+				.build());
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		webView = (WebView)this.findViewById(R.id.webview);
 		
+//		//设置缓存模式
+//		SharedPreferences prefs =PreferenceManager.getDefaultSharedPreferences(this) ;
+//	     Boolean bCacheMode = prefs.getBoolean("set_cacheMode",false);
+//     	if (bCacheMode) {
+//     		webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+//     	}
+//     	else {
+//     		webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+//     	}
+     	
+//		DefaultHttpClient client = new DefaultHttpClient();
+//		HttpGet get = new HttpGet(defaultURL);
+//		HttpContext context = new BasicHttpContext();
+//		CookieStore cookieStore = new BasicCookieStore();
+//		context.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+//		try {
+//			HttpResponse response = client.execute(get, context);
+//			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+//				// 根据你的逻辑，判断返回的值是不是表示已经登录成功
+//				//if (isLoginSuccess()) {
+//					List cookies = cookieStore.getCookies();
+//					if (!cookies.isEmpty()) {
+//						for (int i = cookies.size(); i > 0; i--) {
+//							Cookie cookie = (Cookie) cookies.get(i - 1);
+//							if (cookie.getName().equalsIgnoreCase("jsessionid")) {
+//								// 使用一个常量来保存这个cookie，用于做session共享之用
+//								//Utils.appCookie = cookie;
+//								
+//							}
+//						}
+//					}
+//				//}
+//			}
+//		} catch (ClientProtocolException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		initWebView();
 		
+		synCookies(this, defaultURL);
 		 //加载需要显示的网页 
 		webView.loadUrl(defaultURL);
+		
 		//webView.loadUrl("http://www.baidu.com");
 		//点击链接继续在当前browser中响应，而不是新开Android的系统browser中响应该链接，必须覆盖 webview的WebViewClient对象
 		webView.setWebViewClient(new CbbWebViewClient());
@@ -109,11 +175,11 @@ public class MainActivity extends Activity {
      	
      	//设置硬件加速
      	Boolean bAccHandWare= prefs.getBoolean("set_handware",false);
-//     	if (bAccHandWare) {
-//     		webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-//		}else {
-//			webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-//		}
+     	if (bAccHandWare) {
+     		webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		}else {
+			webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		}
      	
      	
 	}
@@ -285,5 +351,36 @@ public class MainActivity extends Activity {
 //		    	 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 //		     }
 		}
+	}
+	
+	public static String getCookie(Context context, String url){
+		CookieManager cookieManager = CookieManager.getInstance();
+		
+		String cookie = cookieManager.getCookie(url);
+		cookie= "mobileFlag=MOBILE";
+		cookieManager.setCookie("cookie", cookie);
+		return cookie;
+				
+//		if(cookie != null){
+//			cookie= "mobileFlag=MOBILE";
+//			return cookie;
+//		}else{
+//			cookie= "mobileFlag=MOBILE";
+//			cookieManager.setCookie("cookie", cookie);
+//			return cookie;
+//		}
+	}
+	/**
+	 * 同步一下cookie
+	 */
+	public static void synCookies(Context context, String url) {
+		String cookies = "mobileFlag=MOBILE";;
+		CookieSyncManager.createInstance(context);
+		CookieManager cookieManager = CookieManager.getInstance();
+		cookieManager.setAcceptCookie(true);
+		//cookieManager.removeSessionCookie();//移除
+		cookieManager.setCookie(url, cookies);//cookies是在HttpClient中获得的cookie
+		CookieSyncManager.getInstance().sync();
+		
 	}
 }
