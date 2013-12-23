@@ -4,20 +4,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -30,16 +16,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebSettings.PluginState;
@@ -57,12 +40,12 @@ public class MainActivity extends Activity {
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-				.detectDiskReads()
-				.detectDiskWrites()
-				.detectNetwork() // or .detectAll() for all detectable problems
-				.penaltyLog()
-				.build());
+//		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//				.detectDiskReads()
+//				.detectDiskWrites()
+//				.detectNetwork() // or .detectAll() for all detectable problems
+//				.penaltyLog()
+//				.build());
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
@@ -114,8 +97,6 @@ public class MainActivity extends Activity {
 		synCookies(this, defaultURL);
 		 //加载需要显示的网页 
 		webView.loadUrl(defaultURL);
-		
-		//webView.loadUrl("http://www.baidu.com");
 		//点击链接继续在当前browser中响应，而不是新开Android的系统browser中响应该链接，必须覆盖 webview的WebViewClient对象
 		webView.setWebViewClient(new CbbWebViewClient());
 		
@@ -357,18 +338,14 @@ public class MainActivity extends Activity {
 		CookieManager cookieManager = CookieManager.getInstance();
 		
 		String cookie = cookieManager.getCookie(url);
-		cookie= "mobileFlag=MOBILE";
-		cookieManager.setCookie("cookie", cookie);
-		return cookie;
-				
-//		if(cookie != null){
-//			cookie= "mobileFlag=MOBILE";
-//			return cookie;
-//		}else{
-//			cookie= "mobileFlag=MOBILE";
-//			cookieManager.setCookie("cookie", cookie);
-//			return cookie;
-//		}
+		if(cookie != null){
+			cookie= "mobileFlag=MOBILE";
+			return cookie;
+		}else{
+			cookie= "mobileFlag=MOBILE";
+			cookieManager.setCookie("cookie", cookie);
+			return cookie;
+		}
 	}
 	/**
 	 * 同步一下cookie
