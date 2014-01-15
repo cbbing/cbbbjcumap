@@ -3,6 +3,8 @@ package com.bbchen.bjcumap;
 import java.io.File;
 import java.lang.reflect.Method;
 
+import com.bbchen.util.ActivityList;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,7 +31,7 @@ public class SettingActivity extends PreferenceActivity
     private static final String APP_CACHE_DIRNAME = "/webcache"; 
     //private CheckBoxPreference mCheckRotate, mCheckZoom;
     //private Preference mPreferenceClearCache;
-    private Preference mPreferenceReset;
+    private Preference mPreferenceReset, mPreferenceQuit;
     private SharedPreferences mSharedPrefs;
     
     private static final String ATTR_PACKAGE_STATS="PackageStats";
@@ -44,6 +46,8 @@ public class SettingActivity extends PreferenceActivity
 		
 		initViews();
 		getpkginfo("com.bbchen.bjcumap");
+		
+		ActivityList.activityListAll.add(this);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -54,14 +58,104 @@ public class SettingActivity extends PreferenceActivity
 		//mCheckZoom = (CheckBoxPreference)findPreference("set_zoom");
 		//mPreferenceClearCache = (Preference)findPreference("set_clearcache");
 		mPreferenceReset = (Preference)findPreference("set_default");
-		 
+		mPreferenceQuit = (Preference)findPreference("set_quit");
 		//mCheckRotate.setOnPreferenceChangeListener(this);
 		//mCheckZoom.setOnPreferenceChangeListener(this);
 		//mPreferenceClearCache.setOnPreferenceClickListener(this);
 		mPreferenceReset.setOnPreferenceClickListener(this);
+		mPreferenceQuit.setOnPreferenceClickListener(this);
 		
 	}
 
+	@Override
+	public boolean onPreferenceClick(Preference preference) {
+		// TODO Auto-generated method stub
+		if (preference.getKey().equals("set_clearcache")) {
+			Log.d("TAG", "clearcache");
+			clearWebViewCache();
+		}
+		else if (preference.getKey().equals("set_default")) {
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		    builder.setTitle("恢复默认设置?");
+		    //builder.setIcon(android.R.drawable.ic_dialog_info);
+			builder.setPositiveButton("确定",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Log.d("TAG", "reset all setting");
+							Editor editor = mSharedPrefs.edit();
+							editor.putString("set_url", "");
+							editor.putBoolean("set_rotate", true);
+							editor.putBoolean("set_zoom", false);
+							editor.putBoolean("set_cacheMode", true);
+							editor.putBoolean("set_javascript", true);
+							editor.putBoolean("set_handware", false);
+							editor.commit();
+							finish();
+							Intent intent = new Intent(SettingActivity.this, SettingActivity.class);
+							startActivity(intent);
+
+						}
+					});
+			builder.setNegativeButton("取消",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					});
+			builder.show();
+
+		}
+		else if (preference.getKey().equals("set_quit")) {
+			AlertDialog.Builder mDialog = new AlertDialog.Builder(this);  
+	        mDialog.setTitle(getString(R.string.tipTitle));  
+	        mDialog.setMessage(getString(R.string.tipMain));  
+	        mDialog.setPositiveButton(getString(R.string.ok),  
+	                new DialogInterface.OnClickListener() {  
+	                    public void onClick(DialogInterface dialog, int which) {  
+	                    	ActivityList.killall(ActivityList.activityListAll);
+	                    	System.exit(0);  
+	                       
+	                    }  
+	                });  
+	        mDialog.setNegativeButton(getString(R.string.cancel), null);  
+	        mDialog.show(); 
+		}
+		return false;
+	}
+
+	@Override
+	public boolean onPreferenceChange(Preference preference, Object newValue) {
+		// TODO Auto-generated method stub
+		if (preference.getKey().equals("set_rotate")) {
+			Log.d("TAG", "rotate");
+		} else if (preference.getKey().equals("set_zoom")) {
+			Log.d("TAG", "zoom");
+		} else if (preference.getKey().equals("set_javascript")) {
+			Log.d("TAG", "javascript");
+		}
+		
+		return false;
+	} 
+
+	@Override
+	//设置回退 
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK ) {
+			//Intent intent = new Intent(this, MainActivity.class);
+			//startActivity(intent);
+			finish();
+			return true;
+		}
+		
+		return super.onKeyDown(keyCode, event);
+	}
+	
 	 /** 
     * 清除WebView缓存 
     */  
@@ -117,80 +211,6 @@ public class SettingActivity extends PreferenceActivity
    }
 
 
-	@Override
-	public boolean onPreferenceClick(Preference preference) {
-		// TODO Auto-generated method stub
-		if (preference.getKey().equals("set_clearcache")) {
-			Log.d("TAG", "clearcache");
-			clearWebViewCache();
-		}
-		else if (preference.getKey().equals("set_default")) {
-			
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		    builder.setTitle("恢复默认设置?");
-		    //builder.setIcon(android.R.drawable.ic_dialog_info);
-			builder.setPositiveButton("确定",
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Log.d("TAG", "reset all setting");
-							Editor editor = mSharedPrefs.edit();
-							editor.putString("set_url", "");
-							editor.putBoolean("set_rotate", true);
-							editor.putBoolean("set_zoom", false);
-							editor.putBoolean("set_cacheMode", true);
-							editor.putBoolean("set_javascript", true);
-							editor.putBoolean("set_handware", false);
-							editor.commit();
-							finish();
-							Intent intent = new Intent(SettingActivity.this, SettingActivity.class);
-							startActivity(intent);
-
-						}
-					});
-			builder.setNegativeButton("取消",
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-
-						}
-					});
-			builder.show();
-
-		}
-		return false;
-	}
-
-	@Override
-	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		// TODO Auto-generated method stub
-		if (preference.getKey().equals("set_rotate")) {
-			Log.d("TAG", "rotate");
-		} else if (preference.getKey().equals("set_zoom")) {
-			Log.d("TAG", "zoom");
-		} else if (preference.getKey().equals("set_javascript")) {
-			Log.d("TAG", "javascript");
-		}
-		
-		return false;
-	} 
-
-	@Override
-	//设置回退 
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
-		if (keyCode == KeyEvent.KEYCODE_BACK ) {
-			//Intent intent = new Intent(this, MainActivity.class);
-			//startActivity(intent);
-			finish();
-			return true;
-		}
-		
-		return super.onKeyDown(keyCode, event);
-	}
-	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {

@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.bbchen.util.ActivityList;
+
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -12,7 +14,9 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -35,7 +39,7 @@ public class MainActivity extends Activity {
     private static final String APP_CACHE_DIRNAME = "/webcache"; 
 	WebView webView;
 	private long firstime = 0;
-	public static String defaultURL = "http://218.246.23.89/bjcumap/index_mobile.jsp";//"http://wap.baidu.com";//
+	public static String defaultURL = "http://www.bjwhmap.com/bjcumap/index_mobile.jsp?mobileFlag=MOBILE";//"http://wap.baidu.com";//
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -100,6 +104,7 @@ public class MainActivity extends Activity {
 		//点击链接继续在当前browser中响应，而不是新开Android的系统browser中响应该链接，必须覆盖 webview的WebViewClient对象
 		webView.setWebViewClient(new CbbWebViewClient());
 		
+		ActivityList.activityListAll.add(this);
 	}
 
 	@Override
@@ -206,17 +211,34 @@ public class MainActivity extends Activity {
 	//设置回退 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
-			webView.goBack();
-			long secondtime = System.currentTimeMillis();
-			if (secondtime - firstime > 2000) {
-				Toast.makeText(MainActivity.this, "再按一次返回键退出", Toast.LENGTH_SHORT).show();
-				firstime = System.currentTimeMillis();
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (webView.canGoBack()) {
+				webView.goBack();
 				return true;
-			} else {
-				finish();
-				System.exit(0);
 			}
+			else {
+				AlertDialog.Builder mDialog = new AlertDialog.Builder(this);  
+		        mDialog.setTitle(getString(R.string.tipTitle));  
+		        mDialog.setMessage(getString(R.string.tipMain));  
+		        mDialog.setPositiveButton(getString(R.string.ok),  
+		                new DialogInterface.OnClickListener() {  
+		                    public void onClick(DialogInterface dialog, int which) {  
+		                        System.exit(0);  
+		                    }  
+		                });  
+		        mDialog.setNegativeButton(getString(R.string.cancel), null);  
+		        mDialog.show(); 
+			}
+			
+//			long secondtime = System.currentTimeMillis();
+//			if (secondtime - firstime > 1000) {
+//				Toast.makeText(MainActivity.this, "再按一次返回键退出", Toast.LENGTH_SHORT).show();
+//				firstime = System.currentTimeMillis();
+//				return true;
+//			} else {
+//				finish();
+//				System.exit(0);
+//			}
 			
 		}
 		else if (keyCode == KeyEvent.KEYCODE_MENU)
@@ -229,7 +251,7 @@ public class MainActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 
-	 //Web视图 
+	//Web视图 
     private class CbbWebViewClient extends WebViewClient { 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) { 

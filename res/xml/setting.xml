@@ -77,7 +77,13 @@
 			android:title="恢复默认设置"           
             android:summary="重置全部设置"      
             android:widgetLayout="@layout/pref_widget_more" />
-        
+            <Preference
+            android:key="set_quit"
+            android:layout="@layout/pref_list_item_bot"
+			android:title="退出程序"  
+			android:widgetLayout="@layout/pref_widget_more"                    
+            />     
      </PreferenceCategory>
+    
 	
 </PreferenceScreen>
