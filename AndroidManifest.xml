@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bbchen.bjcumap"
-    android:versionCode="3" 
+    android:versionCode="4" 
     android:versionName="1.0" >
-    <!--modify date: 2014-1-15 -->
+    <!--modify date: 2014-1-15 code3-->
+    <!--modify date: 2014-1-22 code4-->
     
     <supports-screens
         android:anyDensity="true"
@@ -40,5 +41,5 @@
     <!-- 权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>
