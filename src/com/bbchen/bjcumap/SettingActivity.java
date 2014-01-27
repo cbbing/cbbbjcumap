@@ -282,4 +282,6 @@ public class SettingActivity extends PreferenceActivity
 			result = Long.toString(length) + "B";
 		return result;
 	}
+	
+	
 }

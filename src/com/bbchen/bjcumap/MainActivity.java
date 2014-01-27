@@ -18,6 +18,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.bbchen.util.ActivityList;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UmengUpdateAgent;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -38,6 +40,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -64,12 +67,6 @@ public class MainActivity extends Activity {
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-//		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-//				.detectDiskReads()
-//				.detectDiskWrites()
-//				.detectNetwork() // or .detectAll() for all detectable problems
-//				.penaltyLog()
-//				.build());
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
@@ -126,6 +123,11 @@ public class MainActivity extends Activity {
 		
 		webView.setDownloadListener(new MyWebViewDownLoadListener());
 		ActivityList.activityListAll.add(this);
+		
+		//友盟
+		MobclickAgent.updateOnlineConfig(this);
+		UmengUpdateAgent.update(this);
+		UmengUpdateAgent.setUpdateOnlyWifi(false);
 	}
 
 	@Override
@@ -188,8 +190,16 @@ public class MainActivity extends Activity {
 			webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		}
      	
-     	
+     	MobclickAgent.onResume(this);
 	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+
 	@SuppressLint("NewApi")
 	private void initWebView() {
 		//设置WebView属性，能够执行Javascript脚本 
@@ -274,12 +284,12 @@ public class MainActivity extends Activity {
 
 	//Web视图 
     private class CbbWebViewClient extends WebViewClient { 
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) { 
-        	Log.i(TAG, "intercept url="+url); 
-        	view.loadUrl(url); 
-            return true; 
-        }
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, String url) { 
+//        	Log.i(TAG, "intercept url="+url); 
+//        	view.loadUrl(url); 
+//            return true; 
+//        }
 
 		@Override
 		public void onLoadResource(WebView view, String url) {
@@ -641,4 +651,5 @@ public class MainActivity extends Activity {
 		CookieSyncManager.getInstance().sync();
 		
 	}
+                  
 }
